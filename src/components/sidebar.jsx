@@ -1,4 +1,6 @@
-export default function SideBar({ change, closeSide }) {
+import { forwardRef } from 'react';
+
+export default function SideBar({ change, closeSide, entries }) {
   function handleChange() {
     change(true);
     closeSide(false);
@@ -39,7 +41,7 @@ export default function SideBar({ change, closeSide }) {
 
         <button
           onClick={handleChange}
-          className="px-4 py-2   lg:text-base md:text-base sm:text-base rounded-md bg-stone-700 text-stone-400 hover:bg-stone-600 hover:text-stone-100 flex flex-row space-x-1"
+          className="px-4 py-2 justify-center  lg:text-base md:text-base sm:text-base w-full rounded-md bg-stone-700 text-stone-400 hover:bg-stone-600 hover:text-stone-100 flex flex-row space-x-1"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -57,7 +59,20 @@ export default function SideBar({ change, closeSide }) {
           </svg>
           <p> Add Project</p>
         </button>
-        <ul></ul>
+        {entries.length > 0 && (
+          <ul className="p-4 mt-4 rounded-md bg-stone-100">
+            {entries.map((entry) => {
+              return (
+                <li
+                  className="flex justify-between my-4 font-semibold text-stone-600 hover:bg-stone-600 hover:text-stone-50 hover:rounded p-3"
+                  key={entry.id}
+                >
+                  {entry.title}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </aside>
     </>
   );

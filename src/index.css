@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+button {
+    position: relative;
+    /* Ensures the underline is positioned relative to the button */
+    overflow: hidden;
+    /* Prevents the underline from being visible outside the button */
+}
+
+.underline-span {
+    position: absolute;
+    bottom: 0;
+    /* Aligns the underline to the bottom of the button */
+    left: 0;
+    /* Starts the underline from the left */
+    width: 100%;
+    height: 1px;
+    /* Adjust the height as needed */
+    background-color: currentColor;
+    /* Makes the underline the same color as the text */
+    transform: scaleX(0);
+    transform-origin: bottom left;
+    transition: transform 0.3s ease-in-out;
+}
+
+button:hover .underline-span {
+    transform: scaleX(1);
+    /* Stretches the underline to full width on hover */
+}

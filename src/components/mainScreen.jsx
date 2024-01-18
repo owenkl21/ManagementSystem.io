@@ -18,7 +18,7 @@ export default function MainScreen({ change }) {
         </h2>
         <button
           onClick={handleChange}
-          className="px-6 py-2 rounded-md bg-stone-800 text-stone-50 hover:bg-stone-950"
+          className="px-6 py-2 rounded-md bg-stone-800 text-stone-50 hover:bg-stone-600"
         >
           Create new project
         </button>

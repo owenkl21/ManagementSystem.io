@@ -1,37 +1,53 @@
+import React, { useState, useEffect } from 'react';
 import SideBar from './components/sidebar';
 import MainScreen from './components/mainScreen';
 import InputScreen from './components/inputScreen';
-import React, { useState, useEffect } from 'react';
 
 function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [newProject, setNewProject] = useState(false);
-  const [addProject, setAddProject] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [entries, setEntries] = useState([]);
+
+  // Function to add new entries
+  const onAdd = (newEntry) => {
+    setEntries((prevEntries) => [...prevEntries, newEntry]);
+  };
+
+  useEffect(() => {
+    if (entries.length > 0) {
+      console.log('Saving to localStorage:', entries);
+      localStorage.setItem('entries', JSON.stringify(entries));
+    }
+  }, [entries]);
+
+  useEffect(() => {
+    console.log('Attempting to retrieve entries from localStorage');
+    const entriesString = localStorage.getItem('entries');
+    console.log('Retrieved from localStorage:', entriesString); // Check what's actually retrieved
+    if (entriesString) {
+      setEntries(JSON.parse(entriesString));
+    }
+  }, []);
+
+  // Handle window resize to determine if the device is mobile
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
 
-    // Add event listener
     window.addEventListener('resize', handleResize);
+    handleResize(); // Initialize the state based on the current window size
 
-    // Call handler right away so state gets updated with initial window size
-    handleResize();
-
-    // Remove event listener on cleanup
     return () => window.removeEventListener('resize', handleResize);
-  }, []); // Empty array ensures that effect is only run on mount and unmount
+  }, []);
 
-  function openSide() {
-    setShowSidebar(true);
-  }
   return (
     <>
       <main className="h-screen flex gap-0">
         {isMobile ? (
           <>
-            {!showSidebar ? (
+            {!showSidebar && (
               <button
                 className="toggle-button fixed z-30 rounded-full bg-stone-800 text-stone-50 m-1 p-2 top-1 left-1"
                 onClick={() => setShowSidebar(true)}
@@ -51,28 +67,27 @@ function App() {
                   />
                 </svg>
               </button>
-            ) : (
-              ''
             )}
-            {/* <div
-              className={`absolute inset-0 transition-opacity duration-300 ease-linear `}
-              onClick={() => setShowSidebar(false)}
-            ></div> */}
             <div
-              className={`sidebar fixed inset-y-0 left-0 w-75  z-20 transform ${
+              className={`sidebar fixed inset-y-0 left-0 w-75 z-20 transform ${
                 showSidebar ? 'translate-x-0' : '-translate-x-full'
               } transition-transform duration-300 ease-in-out`}
             >
               {showSidebar && (
-                <SideBar change={setNewProject} closeSide={setShowSidebar} />
+                <SideBar
+                  entries={entries}
+                  change={setNewProject}
+                  closeSide={setShowSidebar}
+                />
               )}
             </div>
-            <div className=" flex">
+            <div className="flex">
               {newProject ? (
                 <InputScreen
+                  onAdd={onAdd}
                   className="relative z-0"
                   close={setNewProject}
-                  add={setAddProject}
+                  mobile={isMobile}
                 />
               ) : (
                 <MainScreen change={setNewProject} />
@@ -81,9 +96,9 @@ function App() {
           </>
         ) : (
           <>
-            <SideBar change={setNewProject} />
+            <SideBar entries={entries} change={setNewProject} />
             {newProject ? (
-              <InputScreen close={setNewProject} add={setAddProject} />
+              <InputScreen onAdd={onAdd} close={setNewProject} />
             ) : (
               <MainScreen change={setNewProject} />
             )}
