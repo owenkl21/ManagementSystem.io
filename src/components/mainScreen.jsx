@@ -7,7 +7,7 @@ export default function MainScreen({ change }) {
       <div className="flex flex-col justify-center items-center gap-4 w-screen">
         <img
           className="w-16 h-16 object-contain mx-auto"
-          src="../../src/assets/no-projects.png"
+          src="../assets/no-projects.png"
           alt="logo"
         ></img>
         <h1 className="text-3xl font-bold text-stone-600 mb-2 uppercase">

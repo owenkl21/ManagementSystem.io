@@ -14,7 +14,7 @@ export default function SideBar({ change, closeSide, entries }) {
       <aside className="lg:w-1/5 px-8 py-8 bg-stone-900 text-stone-50 md:w-2/3 rounded-r-xl h-screen ">
         <div className="flex flex-row  justify-center items-center gap-1 pb-4 mb-4 border-b-2 sm:pb">
           <img
-            src="../../src/assets/compLogo.png"
+            src="../assets/compLogo.png"
             alt="companyLogo"
             className="w-10 rounded-full"
           ></img>
