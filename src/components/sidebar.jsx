@@ -1,5 +1,4 @@
-import { forwardRef } from 'react';
-
+import CompanyLogo from '../assets/compLogo.png';
 export default function SideBar({ change, closeSide, entries }) {
   function handleChange() {
     change(true);
@@ -14,7 +13,7 @@ export default function SideBar({ change, closeSide, entries }) {
       <aside className="lg:w-1/5 px-8 py-8 bg-stone-900 text-stone-50 md:w-2/3 rounded-r-xl h-screen ">
         <div className="flex flex-row  justify-center items-center gap-1 pb-4 mb-4 border-b-2 sm:pb">
           <img
-            src="../assets/compLogo.png"
+            src={CompanyLogo}
             alt="companyLogo"
             className="w-10 rounded-full"
           ></img>
