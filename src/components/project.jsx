@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function Project({ entry }) {
   const [showTask, setShowTask] = useState(false);
   const [tasks, setTasks] = useState([]);
+
+  // Define a unique key for localStorage
+  const localStorageKey = 'projectTasks';
 
   // Parse the entry date
   const entryDate = new Date(entry.date);
@@ -25,6 +28,7 @@ export default function Project({ entry }) {
   } else {
     message = `Time left until deadline: ${daysLeft} days.`;
   }
+  // Load tasks from localStorage when the component mounts
 
   function addTask() {
     const newTaskId = tasks.length + 1;
@@ -107,7 +111,10 @@ export default function Project({ entry }) {
                       >
                         Edit
                       </button>
-                      <button onClick={() => deleteTask(task.id)}>
+                      <button
+                        class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+                        onClick={() => deleteTask(task.id)}
+                      >
                         Delete
                       </button>
                     </div>
