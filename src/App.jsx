@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import SideBar from './components/sidebar';
 import MainScreen from './components/mainScreen';
 import InputScreen from './components/inputScreen';
-
+import Project from './components/project';
 function App() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [newProject, setNewProject] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [entries, setEntries] = useState([]);
-
+  const [selectedEntry, setSelectedEntry] = useState(null);
+  const [showProject, setShowProject] = useState(false);
   // Function to add new entries
   const onAdd = (newEntry) => {
     setEntries((prevEntries) => [...prevEntries, newEntry]);
@@ -20,6 +21,15 @@ function App() {
       localStorage.setItem('entries', JSON.stringify(entries));
     }
   }, [entries]);
+
+  useEffect(() => {
+    console.log('Attempting to retrieve entries from localStorage');
+    const entriesString = localStorage.getItem('entries');
+    console.log('Retrieved from localStorage:', entriesString); // Check what's actually retrieved
+    if (entriesString) {
+      setEntries(JSON.parse(entriesString));
+    }
+  }, []);
 
   useEffect(() => {
     console.log('Attempting to retrieve entries from localStorage');
@@ -78,29 +88,52 @@ function App() {
                   entries={entries}
                   change={setNewProject}
                   closeSide={setShowSidebar}
+                  setSelectedEntry={setSelectedEntry}
+                  setShowProject={setShowProject}
                 />
               )}
             </div>
             <div className="flex">
-              {newProject ? (
-                <InputScreen
-                  onAdd={onAdd}
-                  className="relative z-0"
-                  close={setNewProject}
-                  mobile={isMobile}
-                />
+              {showProject ? (
+                <>
+                  <Project entry={selectedEntry} />
+                </>
               ) : (
-                <MainScreen change={setNewProject} />
+                <>
+                  {newProject ? (
+                    <InputScreen
+                      onAdd={onAdd}
+                      className="relative z-0"
+                      close={setNewProject}
+                      mobile={isMobile}
+                    />
+                  ) : (
+                    <MainScreen change={setNewProject} />
+                  )}
+                </>
               )}
             </div>
           </>
         ) : (
           <>
-            <SideBar entries={entries} change={setNewProject} />
-            {newProject ? (
-              <InputScreen onAdd={onAdd} close={setNewProject} />
+            <SideBar
+              entries={entries}
+              change={setNewProject}
+              setSelectedEntry={setSelectedEntry}
+              setShowProject={setShowProject}
+            />
+            {showProject ? (
+              <>
+                <Project entry={selectedEntry} />
+              </>
             ) : (
-              <MainScreen change={setNewProject} />
+              <>
+                {newProject ? (
+                  <InputScreen onAdd={onAdd} close={setNewProject} />
+                ) : (
+                  <MainScreen change={setNewProject} />
+                )}
+              </>
             )}
           </>
         )}

@@ -1,10 +1,24 @@
 import CompanyLogo from '../assets/compLogo.png';
-export default function SideBar({ change, closeSide, entries }) {
+export default function SideBar({
+  change,
+  closeSide,
+  entries,
+  setSelectedEntry,
+  setShowProject,
+}) {
   function handleChange() {
     change(true);
+
+    setShowProject(false);
     closeSide(false);
   }
   function handleClose() {
+    closeSide(false);
+  }
+
+  function entrySelect(entry) {
+    setSelectedEntry(entry);
+    setShowProject(true);
     closeSide(false);
   }
 
@@ -65,6 +79,7 @@ export default function SideBar({ change, closeSide, entries }) {
                 <li
                   className="flex justify-between my-4 font-semibold text-stone-600 hover:bg-stone-600 hover:text-stone-50 hover:rounded p-3"
                   key={entry.id}
+                  onClick={() => entrySelect(entry)}
                 >
                   {entry.title}
                 </li>
