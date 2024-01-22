@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 
 export default function InputScreen({ close, mobile, onAdd }) {
+  // Step 1: Create a state variable for validation
+  const [showValidationError, setShowValidationError] = useState(false);
+
   const title = useRef();
   const description = useRef();
   const date = useRef();
@@ -12,6 +15,16 @@ export default function InputScreen({ close, mobile, onAdd }) {
   }
 
   function handleSubmit() {
+    // Step 2: Check if any input field is empty
+    if (
+      !title.current.value ||
+      !description.current.value ||
+      !date.current.value
+    ) {
+      // Step 3: Set the validation error state to true
+      setShowValidationError(true);
+      return; // Prevent further execution
+    }
     // Prevent the default form submission behavior
     // e.preventDefault();
     // Add the new entry to the array of entries
@@ -30,8 +43,32 @@ export default function InputScreen({ close, mobile, onAdd }) {
     date.current.value = '';
   }
 
+  function dialogClose() {
+    setShowValidationError(false);
+  }
+
   return (
     <>
+      {showValidationError && (
+        <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-stone-800 bg-opacity-90 text-stone-50">
+          <div className="bg-white p-4 rounded-md">
+            <h1 className="text-stone-700 flex items-center justify-center text-2xl">
+              Validation Alert
+            </h1>
+            <p className="text-stone-500 flex items-center justify-center mt-4 mb-4">
+              Please fill in all fields.
+            </p>
+            <div className="w-full flex justify-end">
+              <button
+                onClick={dialogClose}
+                className="text-stone-500 flex  hover:bg-stone-700 hover:text-stone-50  rounded p-2"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {mobile ? (
         <>
           <div className="flex flex-col justify-center items-center gap-4 w-screen ">

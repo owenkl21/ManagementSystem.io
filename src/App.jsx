@@ -40,6 +40,20 @@ function App() {
     }
   }, []);
 
+  const deleteProject = (projectId) => {
+    const updatedEntries = entries.filter((entry) => entry.id !== projectId);
+    setEntries(updatedEntries);
+
+    // If the deleted project is currently selected, deselect it
+    if (selectedEntry && selectedEntry.id === projectId) {
+      setSelectedEntry(null);
+    }
+
+    localStorage.setItem('entries', JSON.stringify(updatedEntries));
+    setShowProject(false);
+    setNewProject(false);
+  };
+
   // Handle window resize to determine if the device is mobile
   useEffect(() => {
     const handleResize = () => {
@@ -124,7 +138,10 @@ function App() {
             />
             {showProject ? (
               <>
-                <Project entry={selectedEntry} />
+                <Project
+                  entry={selectedEntry}
+                  deleteProject={() => deleteProject(selectedEntry.id)}
+                />
               </>
             ) : (
               <>
