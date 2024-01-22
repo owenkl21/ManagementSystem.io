@@ -1,11 +1,24 @@
-import { forwardRef } from 'react';
-
-export default function SideBar({ change, closeSide, entries }) {
+import CompanyLogo from '../assets/compLogo.png';
+export default function SideBar({
+  change,
+  closeSide,
+  entries,
+  setSelectedEntry,
+  setShowProject,
+}) {
   function handleChange() {
     change(true);
+
+    setShowProject(false);
     closeSide(false);
   }
   function handleClose() {
+    closeSide(false);
+  }
+
+  function entrySelect(entry) {
+    setSelectedEntry(entry);
+    setShowProject(true);
     closeSide(false);
   }
 
@@ -14,7 +27,7 @@ export default function SideBar({ change, closeSide, entries }) {
       <aside className="lg:w-1/5 px-8 py-8 bg-stone-900 text-stone-50 md:w-2/3 rounded-r-xl h-screen ">
         <div className="flex flex-row  justify-center items-center gap-1 pb-4 mb-4 border-b-2 sm:pb">
           <img
-            src="../../src/assets/compLogo.png"
+            src={CompanyLogo}
             alt="companyLogo"
             className="w-10 rounded-full"
           ></img>
@@ -66,6 +79,7 @@ export default function SideBar({ change, closeSide, entries }) {
                 <li
                   className="flex justify-between my-4 font-semibold text-stone-600 hover:bg-stone-600 hover:text-stone-50 hover:rounded p-3"
                   key={entry.id}
+                  onClick={() => entrySelect(entry)}
                 >
                   {entry.title}
                 </li>
