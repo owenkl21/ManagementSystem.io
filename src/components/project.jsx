@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
-export default function Project({ entry, deleteProject }) {
+export default function Project({ entry, deleteProject, isMobile }) {
   const [showTask, setShowTask] = useState(false);
   const [tasks, setTasks] = useState([]);
+  const [editMode, setEditMode] = useState({});
+  const [editedContent, setEditedContent] = useState({});
 
   // Parse the entry date
   const entryDate = new Date(entry.date);
@@ -31,43 +33,12 @@ export default function Project({ entry, deleteProject }) {
 
   useEffect(() => {
     const savedTasks = localStorage.getItem(localStorageKey);
-    console.log(
-      `[Effect: Load] Loaded tasks for ${localStorageKey}:`,
-      savedTasks
-    );
 
     if (savedTasks) {
       const parsedTasks = JSON.parse(savedTasks);
-      console.log(
-        `[Effect: Load] Parsed tasks for ${localStorageKey}:`,
-        parsedTasks
-      );
       setTasks(parsedTasks); // This sets the tasks state
       setShowTask(parsedTasks.length > 0);
     } else {
-      console.log(`[Effect: Load] No tasks found for ${localStorageKey}.`);
-      setTasks([]); // Explicitly set to an empty array if no tasks found
-      setShowTask(false);
-    }
-  }, [localStorageKey]);
-
-  useEffect(() => {
-    const savedTasks = localStorage.getItem(localStorageKey);
-    console.log(
-      `[Effect: Load] Loaded tasks for ${localStorageKey}:`,
-      savedTasks
-    );
-
-    if (savedTasks) {
-      const parsedTasks = JSON.parse(savedTasks);
-      console.log(
-        `[Effect: Load] Parsed tasks for ${localStorageKey}:`,
-        parsedTasks
-      );
-      setTasks(parsedTasks); // This sets the tasks state
-      setShowTask(parsedTasks.length > 0);
-    } else {
-      console.log(`[Effect: Load] No tasks found for ${localStorageKey}.`);
       setTasks([]); // Explicitly set to an empty array if no tasks found
       setShowTask(false);
     }
@@ -86,9 +57,6 @@ export default function Project({ entry, deleteProject }) {
 
     // Save updated tasks to localStorage
     localStorage.setItem(localStorageKey, JSON.stringify(updatedTasks));
-
-    // Log tasks after updating
-    console.log('Tasks after addition saved to localStorage:', updatedTasks);
   }
 
   function deleteTask(taskId) {
@@ -100,18 +68,34 @@ export default function Project({ entry, deleteProject }) {
     }
     // Save updated tasks to localStorage
     localStorage.setItem(localStorageKey, JSON.stringify(updatedTasks));
-    console.log(`Tasks after deletion saved to localStorage:`, updatedTasks);
   }
 
-  function editTask(taskId, newContent) {
+  // Function to toggle edit mode for a specific task
+  const toggleEditMode = (taskId) => {
+    setEditMode((prevEditMode) => ({
+      ...prevEditMode,
+      [taskId]: !prevEditMode[taskId],
+    }));
+  };
+
+  // Function to handle editing a task
+  const handleEditTask = (taskId) => {
     const updatedTasks = tasks.map((task) =>
-      task.id === taskId ? { ...task, content: newContent } : task
+      task.id === taskId
+        ? { ...task, content: editedContent[taskId] || task.content }
+        : task
     );
     setTasks(updatedTasks);
+    setEditedContent((prevEditedContent) => {
+      const newEditedContent = { ...prevEditedContent };
+      delete newEditedContent[taskId]; // Clear the edited content for this task
+      return newEditedContent;
+    });
     // Save updated tasks to localStorage
     localStorage.setItem(localStorageKey, JSON.stringify(updatedTasks));
-    console.log(`Tasks after deletion saved to localStorage:`, updatedTasks);
-  }
+    // Exit edit mode
+    toggleEditMode(taskId);
+  };
 
   return (
     <>
@@ -171,30 +155,81 @@ export default function Project({ entry, deleteProject }) {
           </button>
         </div>
         {showTask && (
-          <div className="p-8 flex flex-1 overflow-y-auto">
+          <div className=" flex flex-1 overflow-y-auto mt-8 ">
             <div className="">
-              <ul className="bg-stone-500 md:w-[20rem] lg:w-[60rem] p-2 overflow-y-auto rounded">
+              <ul className="bg-stone-500 md:w-[30rem] lg:w-[60rem] p-2 overflow-y-auto rounded gap-2 w-[22rem]">
                 {tasks.map((task) => (
                   <li
                     key={task.id}
                     className="flex justify-between items-center p-2"
                   >
-                    {task.content}
-                    <div>
-                      <button
-                        onClick={() =>
-                          editTask(task.id, `Edited ${task.content}`)
-                        }
-                        className="mr-2"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-                        onClick={() => deleteTask(task.id)}
-                      >
-                        Delete
-                      </button>
+                    {editMode[task.id] ? (
+                      <div>
+                        <input
+                          className="lg:w-64 md:w-60 w-[9rem] px-2 py-1 rounded-sm bg-stone-200"
+                          type="text"
+                          value={editedContent[task.id] || task.content}
+                          onChange={(e) =>
+                            setEditedContent((prevEditedContent) => ({
+                              ...prevEditedContent,
+                              [task.id]: e.target.value,
+                            }))
+                          }
+                        />
+                      </div>
+                    ) : (
+                      <div className="text-stone-200 ">{task.content}</div>
+                    )}
+                    <div className=" flex gap-2">
+                      {editMode[task.id] ? (
+                        // Display a Save button in edit mode
+                        <button
+                          className="px-6 py-2 rounded-md bg-stone-800 text-stone-50 hover:bg-stone-950"
+                          onClick={() => handleEditTask(task.id)}
+                        >
+                          Save
+                        </button>
+                      ) : (
+                        // Display an Edit button in non-edit mode
+                        <button
+                          className="px-6 py-2 rounded-md bg-stone-800 text-stone-50 hover:bg-stone-950"
+                          onClick={() => toggleEditMode(task.id)}
+                        >
+                          Edit
+                        </button>
+                      )}
+                      {isMobile ? (
+                        <>
+                          <button
+                            className="px-6 py-2 rounded-md bg-stone-800 text-stone-50 hover:bg-stone-950"
+                            onClick={() => deleteTask(task.id)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                              className="w-6 h-6"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                              />
+                            </svg>
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className="px-6 py-2 rounded-md bg-stone-800 text-stone-50 hover:bg-stone-950"
+                            onClick={() => deleteTask(task.id)}
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
                     </div>
                   </li>
                 ))}

@@ -51,11 +51,11 @@ export default function InputScreen({ close, mobile, onAdd }) {
     <>
       {showValidationError && (
         <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-stone-800 bg-opacity-90 text-stone-50">
-          <div className="bg-white p-4 rounded-md">
-            <h1 className="text-stone-700 flex items-center justify-center text-2xl">
-              Validation Alert
+          <div className="bg-white w-[20rem] p-4 rounded-md">
+            <h1 className="text-stone-700 flex items-center justify-center font-bold text-2xl">
+              Validation Alert!
             </h1>
-            <p className="text-stone-500 flex items-center justify-center mt-4 mb-4">
+            <p className="text-red-500 flex items-center justify-center uppercase mt-4 mb-4">
               Please fill in all fields.
             </p>
             <div className="w-full flex justify-end">

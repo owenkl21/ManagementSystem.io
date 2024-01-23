@@ -110,7 +110,11 @@ function App() {
             <div className="flex">
               {showProject ? (
                 <>
-                  <Project entry={selectedEntry} />
+                  <Project
+                    isMobile={isMobile}
+                    entry={selectedEntry}
+                    deleteProject={() => deleteProject(selectedEntry.id)}
+                  />
                 </>
               ) : (
                 <>
